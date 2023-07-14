@@ -1,0 +1,68 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset0 Courier New;}{\f2\fnil\fcharset2 Symbol;}}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\qc\f0\fs22\lang9 ChatGPT Prompts for laptop tracking app\par
+
+\pard\sa200\sl276\slmult1 The app will have the following php pages:  index.php, checkin.php, checkout.php.\par
+The database will have the following tables: \par
+
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1 student table with fields: student_number (PK), first_name, last_name\par
+{\pntext\f2\'B7\tab}laptop table with fields: serial_number(PK), laptop_checkedin(boolean), charger_cord_checkedin(boolean), student_number(FK)\par
+
+\pard\sa200\sl276\slmult1 This app will need a data file (perhaps csv) with all students attending VHS. File needs student number, first and last name\par
+index.php will contain welcome message and two checkboxes (of substantial size) one for checkin the other for checkout. Perhaps a picture of the hawk as well.  The app will serve up the appropriate webpage according to the checked item\par
+checkout.php will contain a web form with the following input fields:\par
+
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1 student number input field: gets the focus straight away, use the scanner to scan student ID to populate this field. If no student is found in data file this app will add the student to the data file. (student number, first and last name)\par
+{\pntext\f2\'B7\tab}Input fields for first and last name. If scanned student id is found in data file, these fields will be automatically populated with that info. If scanned id was not found in the data file user will have to key in the first and last name of the student. \par
+{\pntext\f2\'B7\tab}Input field for laptop serial number. This field gets populated via the scanner as well. \par
+{\pntext\f2\'B7\tab}Input field (checkbox) for user to check to indicate a charger cord was checked out with laptop\par
+{\pntext\f2\'B7\tab}Submit button with the caption 'submit'.  Upon submit validate all fields have been populated before sending form data to be handled by server. Once client side validation is done, form data will be used to either update or add a record to the database\par
+{\pntext\f2\'B7\tab}Reset button to clear form fields to start a new checkout process\par
+
+\pard\sa200\sl276\slmult1 Checkin.php will contain a web form with the following input fields:\par
+upon clicking on 'check in' on the checkin.php page we will post the checkin form data to a php file to handle theupdate of the LaptopData table to show that laptop was checkedin and a charger cord was checked in; or not.  perhaps provide the user a message as to what update was done\par
+
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1 Input field for laptop serial number. This field gets populated by the scanner.\par
+{\pntext\f2\'B7\tab}Get Student button to have the app get student's first and last name associated with the laptop serial number and auto populate those fields on the form hosting the fields used for first and last name.\par
+{\pntext\f2\'B7\tab}Input fields for first and last name. If serial number is found in laptop table students first, last name and whether or not a charger cord was checked out will be extracted from database.  NOTE: the update sql statement should \ul unconditionally\ulnone  set the field 'laptop_checkedout to 0 and the field laptop_checkedin to 1.  \par
+{\pntext\f2\'B7\tab}Radio buttons that the user must check to confirm charger cord is being checked back in.  Label one radio button 'Yes' and the other 'No'.  NOTE: the update of the LaptopData table's sql statement should set the fields charger_cord_checkedout and charger_cord_checkedin to 1 or 0 based on what radio button is selected. Specifially, if $chargerCheckedIn then set charger_cord_checkedout to 0 and charger_cord_checkedin to 1. Else set charger_cord_checkedout to 1 and charger_cord_checkedin 0.\par
+{\pntext\f2\'B7\tab}Submit button with the caption 'submit' (or Check In). After client side form validation that all fields have been populated the form data will be sent to server to upate the DB\par
+{\pntext\f2\'B7\tab}A reset btton to clear form fields to start a new checkin process\par
+
+\pard\sa200\sl276\slmult1 To update or add a record to the DB: \par
+
+\pard{\pntext\f2\'B7\tab}{\*\pn\pnlvlblt\pnf2\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1 If checking out then will need to query student table by student number, if student number exist add a record to the laptop table with provided form data as values for the fields: serial number, charger checked out(boolean) and student number(Foriegn Key). If student number does not exist in the students table, then first add that student to the student table with values provided for student number, first and last name, then add record to laptop table.  When done show user the laptop(s) that were checked out to the current student.\par
+{\pntext\f2\'B7\tab}If Checking in then will need to query laptop table for provided serial number. Update the laptop_checkedin to "Yes/True" and charger_cord_checkedin field according to what the form data provided for this field.\par
+{\pntext\f2\'B7\tab}NOTE TO MYSELF:  How do we want to maintain the DB at the end of each school year? Do we delete all records from the student and laptop tables and start fresh each Auguest?  Do we save student grade levels in the student table and delete seniors only at the end of each year?\par
+
+\pard\sa200\sl276\slmult1 Qtn:  When I try to check out a different laptop to a student I get a message 'Failed to insert new laptop check-out record.'  Is this because the laptopdata table already has an entry with the entered student number in it showing the student already has a laptop checked out to him/her\par
+Ans:  Yes, that could be the reason why you're getting the "Failed to insert new laptop check-out record" message. It indicates that there is already a record in the LaptopData table associated with the entered student number.\par
+To address this issue, you can modify the code to update the existing record in the LaptopData table instead of inserting a new one. Here's an updated version of the code to handle this case:\par
+\f1\fs20 $haveCharger = (int)$chargerCheckedOut ? "with" : "without";\par
+if ($result->num_rows > 0) \{\par
+    // Laptop serial number already exists, update the record\par
+    $sql = "UPDATE LaptopData \par
+        SET laptop_checkedout = 1,\par
+            charger_cord_checkedout = " . (int)$chargerCheckedOut . ",\par
+            checkout_date = NOW(),\par
+            student_number = '$studentNumber'\par
+        WHERE serial_number = '$laptopSerialNumber'";\par
+    if ($conn->query($sql) === TRUE) \{\par
+        $message = "Laptop with serial number $laptopSerialNumber has been successfully checked out to $\{firstName\} $\{lastName\} $haveCharger charger.";\par
+    \} else \{\par
+        $message = 'Failed to update laptop check-out status.';\par
+    \}\par
+\} else \{\par
+    // Laptop serial number doesn't exist, insert a new record\par
+    $sql = "INSERT INTO LaptopData (serial_number, laptop_checkedout, charger_cord_checkedout, checkout_date, student_number) VALUES ('$laptopSerialNumber', " . (int)$laptopCheckedOut . ", " . (int)$chargerCheckedOut . ", NOW(), '$studentNumber')";\par
+    if ($conn->query($sql) === TRUE) \{\par
+        $message = "New laptop with serial number $laptopSerialNumber has been successfully checked out to $\{firstName\} $\{lastName\} $haveCharger charger.";\par
+    \} else \{\par
+        $message = 'Failed to insert new laptop check-out record.';\par
+    \}\par
+\}\par
+\f0\fs22 NOTE:  With this code, if a laptop already exists with the entered student number, it will update the record with the new information. Otherwise, it will insert a new record as before.\par
+Make sure to replace the existing code with the updated code. If you're still encountering issues, please verify that the data in your tables is consistent and matches the expected format.\par
+\par
+}
+ 

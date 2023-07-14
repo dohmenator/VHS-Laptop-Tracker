@@ -1,0 +1,129 @@
+/* .form-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.form-field {
+    margin-bottom: 10px;
+}
+
+.form-label {
+    display: block;
+    font-weight: bold;
+}
+
+.form-input {
+    width: 100%;
+    padding: 5px;
+    font-size: 16px;
+}
+
+.form-radio-group {
+    margin-top: 10px;
+}
+
+.form-radio-group label {
+    margin-right: 10px;
+}
+
+.form-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+} */
+
+
+/* checkin_out.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.form-field {
+    margin-bottom: 10px;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-field input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.form-field input[type="submit"] {
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.form-field input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.form-radio-group-horizontal {
+    display: flex;
+    gap: 10px;
+}
+
+
+/* Making Check Out button look disabled when its disabled attribute is set */
+
+.form-button[disabled] {
+    /* Reduce the opacity to make it appear disabled */
+    opacity: 0.6;
+    /* Change the cursor to not-allowed */
+    cursor: not-allowed;
+    /* Add any other styling you want for the disabled button */
+}
+
+.get-student-button {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.messageBox {
+    color: blue;
+}
