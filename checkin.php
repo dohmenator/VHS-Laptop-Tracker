@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $sql = "SELECT LaptopData.serial_number, StudentData.first_name, StudentData.last_name
                 FROM LaptopData
                 INNER JOIN StudentData ON LaptopData.student_number = StudentData.student_number
-                WHERE LaptopData.serial_number = '$laptopSerialNumber'";
+                WHERE LaptopData.serial_number = '$laptopSerialNumber' AND LaptopData.checkin_date IS NULL";
 
         $result = $conn->query($sql);
 
@@ -60,14 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Check if the laptop exists in the LaptopData table
-    $sql = "SELECT * FROM LaptopData WHERE serial_number = '$laptopSerialNumber'";
+    $sql = "SELECT * FROM LaptopData WHERE serial_number = '$laptopSerialNumber'AND LaptopData.checkin_date IS NULL";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
         // Laptop exists, update the check-in status and student data
 
         // Update the LaptopData table based on the laptop serial number
-        $sql = "UPDATE LaptopData SET laptop_checkedout = 0, charger_cord_returned = " . (int)$chargerCheckedIn . ", checkin_date = NOW() WHERE serial_number = '$laptopSerialNumber'";
+        $sql = "UPDATE LaptopData SET laptop_checkedout = 0, charger_cord_returned = " . (int)$chargerCheckedIn . ", checkin_date = NOW() WHERE serial_number = '$laptopSerialNumber'AND LaptopData.checkin_date IS NULL";
         $conn->query($sql);
 
         // Retrieve the student number based on the first name and last name
@@ -78,8 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $row = $result->fetch_assoc();
             $studentNumber = $row['student_number'];
 
-            // Update the student number in the LaptopData table
-            $sql = "UPDATE LaptopData SET student_number = '$studentNumber' WHERE serial_number = '$laptopSerialNumber'";
+            // Update the student number in the LaptopData table ??? do I need AND LaptopData.checkin_date IS NULL
+            $sql = "UPDATE LaptopData SET student_number = '$studentNumber' WHERE serial_number = '$laptopSerialNumber'AND LaptopData.checkin_date IS NULL";
             $conn->query($sql);
 
             // Display success message
@@ -119,7 +119,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="form-field">
-                <p><input type="submit" value="Get Student"></p>
+                <p>
+                    <input type="submit" value="Get Student">
+                    <button type="button" onclick="goToHome()">Home</button>
+            </p>
             </div>
         </form>
     </div>
@@ -159,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         <?php endif; ?>
     </div>
-    <!-- <script src="JS/checkin.js"></script> -->
+    
     
 </body>
 </html>

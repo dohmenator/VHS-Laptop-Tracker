@@ -6,7 +6,31 @@
     <link rel="stylesheet" href="CSS/index.css">    
 </head>
 <body>
-    <div class="container">
+    <!-- Menu Bar -->
+    <div class="menu-bar">
+        <ul>
+            <li>
+                <a href="#">History Reports</a>
+                <ul class="sub-menu">
+                    <li><a href="laptop_history.php">Laptop History</a></li>
+                    <li><a href="student_history.php">Student History</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">Cord Replacement/Loaner</a>
+                <ul class="sub-menu">
+                    <li><a href="replace_loanCord.php">Re-Issue Cord</a></li>
+                    <li><a href="checkin_cord.php">Charger Cord Checkin</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div id="mascot-image">
+        <img src="hawk.jpg" alt="Hawk Image" class="hawk-image">
+    </div>
+
+    <div class="container">   
         <h1>Welcome to the Laptop Check-In/Check-Out System</h1>
         
         <form method="post" action="index.php">
@@ -22,8 +46,6 @@
             
             <button class="start-button" type="submit" name="submit">Start</button>
         </form>
-        
-        <img src="hawk.jpg" alt="Hawk Image" class="hawk-image">
     </div>
 
     <?php

@@ -12,32 +12,45 @@
 }
 
 
-/* Styles for hawk image */
-
-.hawk-image {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 100px;
-    height: 100px;
-}
-
-
 /* Styles for centering content */
 
 html,
 body {
     height: 100%;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     background-color: #f3f3f3;
     color: #333;
     font-family: Arial, sans-serif;
 }
 
+
+/* Styles for hawk image */
+
+#mascot-image {
+    background-color: #f3f3f3;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 20%;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    background-color: #f3f3f3;
+}
+
 .container {
+    /* margin: 0; */
+    margin-top: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
     text-align: center;
     display: inline-block;
     padding: 10px 20px;
@@ -57,3 +70,68 @@ body {
 .btn:hover {
     background-color: #0056b3;
 }
+
+
+/* Style for the menu bar */
+
+.menu-bar {
+    background-color: #333;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    height: 50px;
+}
+
+.menu-bar ul {
+    list-style: none;
+    margin-top: 10px;
+    /* margin: 0; */
+    padding: 0;
+}
+
+.menu-bar li {
+    display: inline;
+    position: relative;
+    margin-top: 10px;
+    /* Add position relative to the parent li */
+}
+
+.menu-bar a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+}
+
+.menu-bar .sub-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #333;
+    width: 250px;
+    /* Adjust the width of the sub-menu as needed */
+}
+
+.menu-bar li:hover .sub-menu {
+    display: block;
+}
+
+.menu-bar .sub-menu li {
+    display: block;
+}
+
+.menu-bar .sub-menu li a {
+    color: #fff;
+    padding: 10px 20px;
+    white-space: nowrap;
+    /* Prevent the subitem text from wrapping */
+}
+
+.menu-bar .sub-menu li a:hover {
+    background-color: #555;
+}
+
+
+/* end css for menu bar */

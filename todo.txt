@@ -1,0 +1,14 @@
+1.  Checkin form don't hide other form fields after checking in a laptop
+2.  Need a readme fields
+    a.  Show ordor of columns in studentdata.csv file and labeled as such: Student ID,First,Last
+    b.  Items in menu bar are meant to be used by the tech specialist and administration personnel
+3.  Need exit button on checkin and checkout at top right????
+4.  laptopdata table needs an auto increment primary key, (not serial  number) because IT dept wants to be able to run a report on the checkout/checkin history of any one laptop.  Some laptops get checked out and in daily.
+    a.  I need to thouroughly test the checkout.php file and the updates made to the database
+5. Need a menu bar for history reports and replacement charger
+    a.  history reports will be 2 reports, history of laptop checkout/in and history of student checkout/ins
+    b.  replacement charger will have 2 subitems checkout replacement/loaner, and checkin replacement/loaner
+
+
+
+           

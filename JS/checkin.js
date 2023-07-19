@@ -26,22 +26,3 @@ function validateForm(event) {
 function goToHome() {
     window.location.href = 'index.php';
 }
-
-function resetForms() {
-    // Reset all form fields except for specific fields
-    var fieldsToExclude = ['laptopSerialNumber', 'firstName', 'lastName'];
-    var forms = document.getElementsByTagName('form');
-
-    for (var i = 0; i < forms.length; i++) {
-        var form = forms[i];
-        var inputs = form.getElementsByTagName('input');
-
-        for (var j = 0; j < inputs.length; j++) {
-            var input = inputs[j];
-
-            if (fieldsToExclude.indexOf(input.id) === -1) {
-                input.value = '';
-            }
-        }
-    }
-}

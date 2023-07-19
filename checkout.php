@@ -1,25 +1,25 @@
 <?php
 require "connectToDatabase.php";
+
+$studentNumber = "";
 $firstName = "";
 $lastName = "";
-$chargerCheckedOut = "";
+$laptopSerialNumber = "";
+$chargerCheckedOut = false;
+$message = "";
 
-// Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve the form data
-    $laptopSerialNumber = $_POST['laptopSerialNumber'];
     $studentNumber = $_POST['studentNumber'];
     $firstName = $_POST['firstName'];
     $lastName = $_POST['lastName'];
-    $laptopCheckedOut = 1;
+    $laptopSerialNumber = $_POST['laptopSerialNumber'];
     $chargerCheckedOut = isset($_POST['chargerCheckedOut']) && $_POST['chargerCheckedOut'] === 'yes';
-    $haveCharger = (int)$chargerCheckedOut ? "with" : "without";
 
-    // Sanitize the form data
-    $laptopSerialNumber = htmlspecialchars($laptopSerialNumber);
+    // Sanitize the inputs
     $studentNumber = htmlspecialchars($studentNumber);
     $firstName = htmlspecialchars($firstName);
     $lastName = htmlspecialchars($lastName);
+    $laptopSerialNumber = htmlspecialchars($laptopSerialNumber);
 
     // Connect to the database
     $conn = connectToDatabase();
@@ -28,59 +28,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Connection failed: ' . $conn->connect_error);
     }
 
-    // Check if the student already exists in the studentdata table
-    $sql = "SELECT * FROM studentdata WHERE student_number = '$studentNumber'";
-    $result = $conn->query($sql);
+    // Check if the student exists in StudentData table
+    $checkStudentQuery = "SELECT student_number FROM StudentData WHERE student_number = ?";
+    $stmt = $conn->prepare($checkStudentQuery);
+    $stmt->bind_param("s", $studentNumber);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
+    // If the student doesn't exist, insert them into StudentData table
     if ($result->num_rows === 0) {
-        // Student doesn't exist, insert the student into the studentdata table
-        $firstName = $_POST['firstName'];
-        $lastName = $_POST['lastName'];
-
-        $sql = "INSERT INTO studentdata (student_number, first_name, last_name) VALUES ('$studentNumber', '$firstName', '$lastName')";
-        if ($conn->query($sql) !== TRUE) {
-            $message = 'Failed to insert student data.';
+        $insertStudentQuery = "INSERT INTO StudentData (student_number, first_name, last_name) 
+                               VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($insertStudentQuery);
+        $stmt->bind_param("sss", $studentNumber, $firstName, $lastName);
+        if ($stmt->execute()) {
+            // Display success message for student insert
+            $message = "New student record added.";
+        } else {
+            // Display error message for student insert
+            $message = "Failed to insert new student record.";
         }
     }
 
-    // Update or insert the laptop data into the laptopdata table
-    $sql = "SELECT * FROM laptopdata WHERE serial_number = '$laptopSerialNumber'";
-    $result = $conn->query($sql);
+    // Insert a new record into the LaptopData table
+    $insertLaptopQuery = "INSERT INTO LaptopData (student_number, serial_number, laptop_checkedout, charger_cord_checkedout, checkout_date) 
+                          VALUES (?, ?, 1, ?, NOW())";
+    $stmt = $conn->prepare($insertLaptopQuery);
+    $chargerCheckedOutValue = ($chargerCheckedOut) ? 1 : 0;
+    print "chargerCheckedOut value: ".$chargerCheckedOutValue;
+    // The "ssi" format in bind_param() specifies that the first two placeholders are strings (s) and the third one is an integer (i).
+    $stmt->bind_param("ssi", $studentNumber, $laptopSerialNumber, $chargerCheckedOutValue);
 
-    if ($result->num_rows > 0) {
-        // Laptop serial number already exists, update the record
-        $sql = "UPDATE laptopdata 
-                SET laptop_checkedout = 1,
-                    charger_cord_checkedout = " . (int)$chargerCheckedOut . ",
-                    checkout_date = NOW(),
-                    student_number = '$studentNumber'
-                WHERE serial_number = '$laptopSerialNumber'";
-
-        if ($conn->query($sql) === TRUE) {
-            //$message = 'Laptop with serial number ' . $laptopSerialNumber . ' has been successfully checked out.';
-            $message = "New laptop successfully checked out to {$firstName} {$lastName} {$haveCharger} charger";
-        } else {
-            $message = 'Failed to update laptop check-out status.';
-        }
+    if ($stmt->execute()) {
+        // Display success message for laptop checkout
+        $message = "New laptop successfully checked out to $firstName $lastName " . ($chargerCheckedOut ? 'with' : 'without') . " charger.";
     } else {
-        // Laptop serial number doesn't exist, insert a new record
-        $sql = "INSERT INTO laptopdata (serial_number, laptop_checkedout, charger_cord_checkedout, checkout_date, student_number) VALUES ('$laptopSerialNumber', " . (int)$laptopCheckedOut . ", " . (int)$chargerCheckedOut . ", NOW(), '$studentNumber')";
-        
-        
-        if ($conn->query($sql) === TRUE) {
-            $message = "New laptop successfully checked out to {$firstName} {$lastName} {$haveCharger} charger";
-        } else {
-            $message = 'Failed to insert new laptop check-out record. (Student has previous laptop checked out)';
-        }
-
+        // Display error message for laptop checkout
+        $message = "Failed to insert new laptop check-out record.";
     }
 
     $conn->close();
-} else {
-    $message = ''; // Initialize an empty message
 }
-
 ?>
+<!-- Rest of your HTML and form code -->
+
 
 <!-- HTML for checkout form -->
 <!DOCTYPE html>
