@@ -32,7 +32,7 @@ function getStudent() {
         return;
     }
 
-    var url = 'Student Data.csv';
+    var url = '../Student Data.csv';
 
     fetch(url)
         .then(function(response) {

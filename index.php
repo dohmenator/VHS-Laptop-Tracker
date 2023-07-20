@@ -14,6 +14,7 @@
                 <ul class="sub-menu">
                     <li><a href="laptop_history.php">Laptop History</a></li>
                     <li><a href="student_history.php">Student History</a></li>
+                    <li><a href="charger_cord_history.php">Charger Cord History</a></li>
                 </ul>
             </li>
             <li>

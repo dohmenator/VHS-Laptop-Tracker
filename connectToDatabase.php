@@ -3,9 +3,9 @@
 function connectToDatabase() {
     $servername = 'localhost';
     $username = 'LaptopTracker';
-    $password = 'myLaptopTracker01!!';
+    $password = 'myLaptopTracker01';
     $dbname = 'laptoptrackerdata';
-
+    var_dump($password);
     $conn = new mysqli($servername, $username, $password, $dbname);
 
     if ($conn->connect_error) {
@@ -14,7 +14,5 @@ function connectToDatabase() {
 
     return $conn;
 }
-
-// Rest of your code
 
 ?>

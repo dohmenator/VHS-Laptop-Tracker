@@ -1,128 +1,129 @@
 // Function to fetch student information from CSV file based on the entered student number
 function getStudent() {
-    const studentNumber = document.getElementById("studentNumber").value;
-    if (studentNumber.trim() === "") {
-        showError("Please enter a valid student number.");
+    var studentNumber = document.getElementById('studentNumber').value;
+    if (studentNumber.trim() === '') {
+        alert('Please enter a student number');
         return;
     }
 
-    // Perform AJAX request to fetch student information from CSV file
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "../Student Data.csv");
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            const csvData = xhr.responseText;
-            const lines = csvData.split("\n");
-            let foundStudent = false;
-            let firstName = "";
-            let lastName = "";
+    var url = '../Student Data.csv';
 
-            // Search for the student in the CSV data
-            for (const line of lines) {
-                const data = line.split(",");
-                if (data[0].trim() === studentNumber) {
-                    foundStudent = true;
-                    firstName = data[1].trim();
-                    lastName = data[2].trim();
-                    break;
-                }
-            }
-
-            if (foundStudent) {
-                // Update the first name and last name fields
-                document.getElementById("firstName").value = firstName;
-                document.getElementById("lastName").value = lastName;
-                // Show the form for Replacement/Lend action
-                document.getElementById("replaceLoanForm").style.display = "block";
-                // Disable the Get Student button
-                document.getElementById("getStudentForm").getElementsByTagName("button")[0].disabled = true;
+    fetch(url)
+        .then(function(response) {
+            if (response.ok) {
+                return response.text();
             } else {
-                showError("Student with the entered number doesn't exist.");
+                throw new Error('Error: ' + response.status);
             }
-        } else {
-            showError("Failed to fetch student information.");
+        })
+        .then(function(csvData) {
+            var students = processData(csvData);
+            var student = findStudent(students, studentNumber);
+
+            if (student) {
+                document.getElementById('firstName').value = student.firstName;
+                document.getElementById('lastName').value = student.lastName;
+                document.getElementById('replaceLoanForm').style.display = 'block';
+                document.getElementById('getStudentForm').getElementsByTagName('button')[0].disabled = true;
+
+                // Disable the input fields for first and last name
+                document.getElementById('firstName').disabled = true;
+                document.getElementById('lastName').disabled = true;
+            } else {
+                // Show the alert message and enable manual entry
+                alert("Student with the entered number doesn't exist. Please manually enter the student's first and last name.");
+                document.getElementById('firstName').value = '';
+                document.getElementById('lastName').value = '';
+                document.getElementById('replaceLoanForm').style.display = 'block';
+                document.getElementById('getStudentForm').getElementsByTagName('button')[0].disabled = true;
+
+                // Enable the input fields for first and last name
+                document.getElementById('firstName').readOnly = false;
+                document.getElementById('lastName').readOnly = false;
+                document.getElementById('firstName').focus();
+            }
+        })
+        .then(function() {
+            // Enable the checkout button
+            document.getElementById('checkoutButton').disabled = false;
+        })
+        .catch(function(error) {
+            alert('Error: ' + error.message);
+        });
+}
+
+
+function processData(csvData) {
+    var lines = csvData.split('\n');
+    var students = [];
+
+    for (var i = 1; i < lines.length; i++) {
+        var fields = lines[i].split(',');
+        var student = {
+            studentNumber: fields[0],
+            firstName: fields[1],
+            lastName: fields[2]
+        };
+        students.push(student);
+    }
+
+    return students;
+}
+
+function findStudent(students, studentNumber) {
+    for (var i = 0; i < students.length; i++) {
+        if (students[i].studentNumber === studentNumber) {
+            return students[i];
         }
-    };
-    xhr.send();
+    }
+
+    return null;
 }
 
-// Function to show error messages
-function showError(message) {
-    const errorElement = document.getElementById("error");
-    errorElement.innerText = message;
-    errorElement.style.display = "block";
-    setTimeout(() => {
-        errorElement.style.display = "none";
-    }, 3000);
-}
-
-// Function to handle form submission and check the selected action
-// document.getElementById("replaceLoanForm").addEventListener("submit", function(event) {
-//     event.preventDefault();
-//     const selectedAction = document.querySelector("input[name='action']:checked");
-//     if (!selectedAction) {
-//         showError("Please select an action (Replacement or Loaner).");
-//         return;
-//     }
-
-//     // Perform the checkout based on the selected action (Replacement or Loaner)
-//     const action = selectedAction.value;
-//     const studentNumber = document.getElementById("studentNumber").value;
-//     const firstName = document.getElementById("firstName").value;
-//     const lastName = document.getElementById("lastName").value;
-//     const chargerCheckedOut = action === "replacement"; // If action is "replacement", charger is checked out.
-
-//     // You can perform the checkout action here using AJAX or other methods as needed.
-
-//     // Display a success message
-//     const message = `Cord successfully checked out to ${firstName} ${lastName} as a ${action}.`;
-//     showError(message);
-// });
-
-// Function to handle form submission and check the selected action
-document.getElementById("replaceLoanForm").addEventListener("submit", function(event) {
+// Function to handle the form submission and check the selected action
+function handleFormSubmission(event) {
     event.preventDefault();
-    const selectedAction = document.querySelector("input[name='action']:checked");
+    var selectedAction = document.querySelector("input[name='action']:checked");
     if (!selectedAction) {
         showError("Please select an action (Replacement or Loaner).");
         return;
     }
 
-    // Perform the checkout based on the selected action (Replacement or Loaner)
-    const action = selectedAction.value;
-    const studentNumber = document.getElementById("studentNumber").value;
-    const firstName = document.getElementById("firstName").value;
-    const lastName = document.getElementById("lastName").value;
-    const chargerCheckedOut = action === "replacement"; // If action is "replacement", charger is checked out.
+    var action = selectedAction.value;
+    var studentNumber = document.getElementById("studentNumber").value;
+    var firstName = document.getElementById("firstName").value;
+    var lastName = document.getElementById("lastName").value;
+    var chargerCheckedOut = action === "replacement";
 
     // Perform AJAX request to insert a new record into the Replacement_Loaner_Cords table
-    const xhr = new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
     xhr.open("POST", "replace_loanCord.php");
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.onload = function() {
         if (xhr.status === 200) {
-            // Display success message
-            const message = `Cord successfully checked out to ${firstName} ${lastName} as a ${action}.`;
+            var message = "Cord successfully checked out to " + firstName + " " + lastName + " as a " + action + ".";
             showError(message);
         } else {
             showError("Failed to check out the cord.");
         }
     };
-    xhr.send(`studentNumber=${encodeURIComponent(studentNumber)}&action=${encodeURIComponent(action)}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`);
-});
+    xhr.send("studentNumber=" + encodeURIComponent(studentNumber) + "&action=" + encodeURIComponent(action) + "&firstName=" + encodeURIComponent(firstName) + "&lastName=" + encodeURIComponent(lastName));
+}
 
 // Function to handle the "Home" button click
 function goToHome() {
     window.location.href = "index.php";
 }
 
+// Function to show error messages
+function showError(message) {
+    var errorElement = document.getElementById("error");
+    errorElement.innerText = message;
+    errorElement.style.display = "block";
+    setTimeout(function() {
+        errorElement.style.display = "none";
+    }, 3000);
+}
 
-// Attach event listener to "Get Student" button after DOM is fully loaded
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("getStudentForm").getElementsByTagName("button")[0].addEventListener("click", getStudent);
-});
 
-// Attach event listener to "Home" button after DOM is fully loaded
-document.addEventListener("onload", function() {
-    document.getElementById("replaceLoanForm").getElementsByTagName("button")[1].addEventListener("click", goToHome);
-});
+document.getElementById("replaceLoanForm").addEventListener("submit", handleFormSubmission);

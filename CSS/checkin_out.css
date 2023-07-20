@@ -100,6 +100,10 @@ h1 {
     gap: 10px;
 }
 
+.form-button {
+    margin-top: 10px;
+}
+
 
 /* Making Check Out button look disabled when its disabled attribute is set */
 
