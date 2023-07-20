@@ -1,4 +1,4 @@
-// replace_loanCord.js
+// checkin_charger_cord.js
 
 // Function to fetch student information from the "getStudentName.php" file based on the entered student number
 function getStudent() {
@@ -45,37 +45,38 @@ function getStudent() {
         });
 }
 
-// Rest of the existing code in replace_loanCord.js
-// ...
 
 // Function to handle the form submission and check the selected action
 function handleFormSubmission(event) {
     event.preventDefault();
-    var selectedAction = document.querySelector("input[name='action']:checked");
+    const selectedAction = document.querySelector("input[name='action']:checked");
     if (!selectedAction) {
-        showError("Please select an action (Replacement or Loaner).");
+        showError("Please select an action (Loaner or Replacement).");
         return;
     }
 
-    var action = selectedAction.value;
-    var studentNumber = document.getElementById("studentNumber").value;
-    var firstName = document.getElementById("firstName").value;
-    var lastName = document.getElementById("lastName").value;
-    var chargerCheckedOut = action === "replacement";
+    // Perform the check-in based on the selected action (Loaner or Replacement)
+    const action = selectedAction.value;
+    const studentNumber = document.getElementById("studentNumber").value;
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
+    const chargerCheckedIn = action === "loaner" ? 1 : 0;
+    const replacementCheckedIn = action === "replacement" ? 1 : 0;
 
-    // Perform AJAX request to insert a new record into the Replacement_Loaner_Cords table
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "replace_loanCord.php");
+    // Perform AJAX request to update the record in the Replacement_Loaner_Cords table
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "checkin_charger_cord.php");
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.onload = function() {
         if (xhr.status === 200) {
-            var message = "Cord successfully checked out to " + firstName + " " + lastName + " as a " + action + ".";
+            // Display success message
+            const message = `Cord successfully checked in for ${firstName} ${lastName} as a ${action}.`;
             showError(message);
         } else {
-            showError("Failed to check out the cord.");
+            showError("Failed to check in the cord.");
         }
     };
-    xhr.send("studentNumber=" + encodeURIComponent(studentNumber) + "&action=" + encodeURIComponent(action) + "&firstName=" + encodeURIComponent(firstName) + "&lastName=" + encodeURIComponent(lastName));
+    xhr.send(`studentNumber=${encodeURIComponent(studentNumber)}&action=${encodeURIComponent(action)}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`);
 }
 
 // Function to handle the "Home" button click
@@ -85,13 +86,23 @@ function goToHome() {
 
 // Function to show error messages
 function showError(message) {
-    var errorElement = document.getElementById("error");
+    const errorElement = document.getElementById("error");
     errorElement.innerText = message;
     errorElement.style.display = "block";
-    setTimeout(function() {
+    setTimeout(() => {
         errorElement.style.display = "none";
     }, 3000);
 }
 
+// // Attach event listener to "Check In Cord" button after DOM is fully loaded
+// document.addEventListener("DOMContentLoaded", function() {
+//     document.getElementById("checkInForm").getElementsByTagName("button")[0].addEventListener("click", handleFormSubmission);
+// });
 
-document.getElementById("replaceLoanForm").addEventListener("submit", handleFormSubmission);
+// // Attach event listener to "Home" button after DOM is fully loaded
+// document.addEventListener("DOMContentLoaded", function() {
+//     document.getElementById("checkInForm").getElementsByTagName("button")[1].addEventListener("click", goToHome);
+// });
+
+document.getElementById("checkInForm").addEventListener("submit", handleFormSubmission);
+//document.getElementById("checkInForm").getElementsByTagName("button")[0].addEventListener("click", handleFormSubmission);

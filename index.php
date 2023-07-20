@@ -21,7 +21,7 @@
                 <a href="#">Cord Replacement/Loaner</a>
                 <ul class="sub-menu">
                     <li><a href="replace_loanCord.php">Re-Issue Cord</a></li>
-                    <li><a href="checkin_cord.php">Charger Cord Checkin</a></li>
+                    <li><a href="checkin_charger_cord.php">Charger Cord Checkin</a></li>
                 </ul>
             </li>
         </ul>

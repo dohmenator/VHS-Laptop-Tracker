@@ -1,4 +1,4 @@
 <?php
-    print ("Under contruction");
+    print "<h1>Under contruction</h2>";
 
 ?>

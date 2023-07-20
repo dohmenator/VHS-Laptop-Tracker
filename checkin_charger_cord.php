@@ -1,5 +1,5 @@
 <?php
-// replace_loanCord.php
+// checkin_charger_cord.php
 
 // Include the database connection file
 require "connectToDatabase.php";
@@ -45,20 +45,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $replacementCordCheckedIn = 0;
 
         if ($selectedAction === "loaner") {
-            $loanerCordCheckedOut = 1;
+            $loanerCordCheckedIn = 1;
         } elseif ($selectedAction === "replacement") {
-            $replacementCordCheckedOut = 1;
+            $replacementCordCheckedIn = 1;
         }
 
-        // Insert a new record into the Replacement_Loaner_Cords table
-        $insertQuery = "INSERT INTO replacement_loaner_cords (student_number, loaner_cord_checkedout, loaner_cord_checkedin, replacement_cord_checkedout, replacement_cord_checkedin, checkout_date) 
-                        VALUES (?, ?, ?, ?, ?, NOW())"; // Using NOW() to get the current date and time
-        $stmt = $conn->prepare($insertQuery);
-        $stmt->bind_param("siiii", $studentNumber, $loanerCordCheckedOut, $loanerCordCheckedIn, $replacementCordCheckedOut, $replacementCordCheckedIn);
+        // Update the existing record in the Replacement_Loaner_Cords table
+        $updateQuery = "UPDATE replacement_loaner_cords 
+                        SET loaner_cord_checkedout = ?, loaner_cord_checkedin = ?, replacement_cord_checkedout = 0, replacement_cord_checkedin = ?,
+                        checkin_date = NOW() 
+                        WHERE student_number = ?";
+        $stmt = $conn->prepare($updateQuery);
+        $stmt->bind_param("iiis", $loanerCordCheckedOut, $loanerCordCheckedIn, $replacementCordCheckedIn, $studentNumber);
         $stmt->execute();
 
         // Display success message
-        $message = "Cord successfully checked out to $firstName $lastName as a $selectedAction on " . date("Y-m-d H:i:s") . ".";
+        $message = "Cord successfully checked in for $firstName $lastName as a $selectedAction on " . date("Y-m-d H:i:s") . ".";
     } else {
         // Student with the entered number doesn't exist
         $message = "Student with the entered number doesn't exist.";
@@ -68,18 +70,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
+
+
 <!-- Your HTML code for the replace_loanCord.php page goes here... -->
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Replace/Lend Cord</title>
+    <title>Check In Replacement/Loaner Cord</title>
     <link rel="stylesheet" href="CSS/checkin_out.css">
     <link rel="icon" href="hawk.jpg" type="image/jpg">
 </head>
 <body>
     <div class="form-container">
-        <h1>Replace/Lend Cord</h1>
+        <h1>Check In Replacement/Loaner Cord</h1>
 
         <form id="getStudentForm">
             <div class="form-field">
@@ -99,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </form>
 
-        <form id="replaceLoanForm" style="display: none;" method="post" action="replace_loanCord.php">
+        <form id="checkInForm" style="display: none;" method="post" action="checkin_charger_cord.php">
             <div class="form-field">
                 <label class="form-label">Select Action:</label>
                 <div class="form-radio-group-horizontal">
@@ -112,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="form-field">
-                <input type="submit" value="Check Out" class="form-button" id="checkoutButton">
+                <input type="submit" value="Check In" class="form-button" id="checkinButton">
                 <button type="button" class="form-button" onclick="goToHome()">Home</button>
             </div>
 
@@ -120,6 +124,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 
-    <script src="JS/replace_loanCord.js"></script>
+    <script src="JS/checkin_charger_cord.js"></script>
 </body>
 </html>

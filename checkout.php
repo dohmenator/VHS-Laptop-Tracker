@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                           VALUES (?, ?, 1, ?, NOW())";
     $stmt = $conn->prepare($insertLaptopQuery);
     $chargerCheckedOutValue = ($chargerCheckedOut) ? 1 : 0;
-    print "chargerCheckedOut value: ".$chargerCheckedOutValue;
+    
     // The "ssi" format in bind_param() specifies that the first two placeholders are strings (s) and the third one is an integer (i).
     $stmt->bind_param("ssi", $studentNumber, $laptopSerialNumber, $chargerCheckedOutValue);
 

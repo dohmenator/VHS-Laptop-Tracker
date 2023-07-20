@@ -5,7 +5,7 @@ function connectToDatabase() {
     $username = 'LaptopTracker';
     $password = 'myLaptopTracker01';
     $dbname = 'laptoptrackerdata';
-    var_dump($password);
+   
     $conn = new mysqli($servername, $username, $password, $dbname);
 
     if ($conn->connect_error) {
