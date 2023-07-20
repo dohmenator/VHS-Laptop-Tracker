@@ -1,15 +1,15 @@
 <?php
-require "connectToDatabase.php";
-$laptopSerialNumber = "";
-$firstName = "";
-$lastName = "";
-$message = "";
+// checkin.php
 
+// Include the database connection file
+require "connectToDatabase.php";
+ $message = "";
+// Check if the laptop serial number is provided in the URL
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['serialNumber'])) {
         $laptopSerialNumber = $_GET['serialNumber'];
 
-        // Sanitize the serial number
+        // Sanitize the input
         $laptopSerialNumber = htmlspecialchars($laptopSerialNumber);
 
         // Connect to the database
@@ -19,24 +19,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             die('Connection failed: ' . $conn->connect_error);
         }
 
-        // Perform the inner join query to get the student's first and last name
-        $sql = "SELECT LaptopData.serial_number, StudentData.first_name, StudentData.last_name
+        // Check if the laptop exists in the LaptopData table
+        $checkLaptopQuery = "SELECT * FROM LaptopData WHERE serial_number = '$laptopSerialNumber'";
+        $checkLaptopResult = $conn->query($checkLaptopQuery);
+
+        if ($checkLaptopResult->num_rows > 0) {
+            // Laptop exists, continue to check if it's checked out to a student
+            $getStudentQuery = "SELECT LaptopData.serial_number, StudentData.first_name, StudentData.last_name
                 FROM LaptopData
                 INNER JOIN StudentData ON LaptopData.student_number = StudentData.student_number
                 WHERE LaptopData.serial_number = '$laptopSerialNumber' AND LaptopData.checkin_date IS NULL";
 
-        $result = $conn->query($sql);
+            $getStudentResult = $conn->query($getStudentQuery);
 
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $firstName = $row['first_name'];
-            $lastName = $row['last_name'];
+            if ($getStudentResult->num_rows > 0) {
+                // Laptop is checked out to a student, display student's first and last name
+                $row = $getStudentResult->fetch_assoc();
+                $firstName = $row['first_name'];
+                $lastName = $row['last_name'];
+
+                // Continue with the check-in process, update the checkin_date in LaptopData
+                // ...
+
+                // Display success message or take appropriate action after successful check-in
+                // ...
+            } else {
+                // Laptop was already checked in
+                $message = "Laptop with serial number $laptopSerialNumber is already checked in.";
+            }
         } else {
-            // No student found with the given serial number
-            $message = "No student found associated with that serial number";
+            // Laptop was never checked out to a student this school year
+            $message = "Laptop with serial number $laptopSerialNumber is not in the database because it was never checked out this school year.";
         }
 
         $conn->close();
+    } else {
+        // Laptop serial number is not provided in the URL
+        $message = "Please provide the serial number of the laptop to check in.";
     }
 }
 
@@ -96,7 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn->close();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html>

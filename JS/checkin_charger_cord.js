@@ -28,7 +28,7 @@ function getStudent() {
             if (data.firstName && data.lastName) {
                 document.getElementById('firstName').value = data.firstName;
                 document.getElementById('lastName').value = data.lastName;
-                document.getElementById('replaceLoanForm').style.display = 'block';
+                document.getElementById('checkInForm').style.display = 'block';
                 document.getElementById('getStudentForm').getElementsByTagName('button')[0].disabled = true;
             } else {
                 alert("Student not found in the database because student does not have a laptop checked out. Sending you back to the home page to check out a laptop to the student");
@@ -105,4 +105,4 @@ function showError(message) {
 // });
 
 document.getElementById("checkInForm").addEventListener("submit", handleFormSubmission);
-//document.getElementById("checkInForm").getElementsByTagName("button")[0].addEventListener("click", handleFormSubmission);
+document.getElementById("checkInForm").getElementsByTagName("button")[0].addEventListener("click", handleFormSubmission);

@@ -26,51 +26,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $firstName = htmlspecialchars($firstName);
     $lastName = htmlspecialchars($lastName);
 
+    // Get the selected action (Replacement or Loaner)
+    $selectedAction = $_POST['action'];
+
     // Connect to the database
     $conn = connectToDatabase();
 
     if ($conn->connect_error) {
         die('Connection failed: ' . $conn->connect_error);
     }
+// ...
 
-    // Check if the student exists in the database
-    if (!empty($firstName) && !empty($lastName)) {
-        // Get the selected action (Replacement or Loaner)
-        $selectedAction = $_POST['action'];
+// Check if the student exists in the database
+if (!empty($firstName) && !empty($lastName)) {
+    // Check if the student number exists in the StudentData table
+    $checkStudentQuery = "SELECT * FROM StudentData WHERE student_number = ?";
+    $stmt = $conn->prepare($checkStudentQuery);
+    $stmt->bind_param("s", $studentNumber);
+    $stmt->execute();
+    $checkStudentResult = $stmt->get_result();
 
-        // Set the appropriate fields based on the selected action
-        $loanerCordCheckedOut = 0;
-        $loanerCordCheckedIn = 0;
-        $replacementCordCheckedOut = 0;
-        $replacementCordCheckedIn = 0;
+    if ($checkStudentResult->num_rows > 0) {
+        // Student exists, continue with the check-in process
+        // ...
 
-        if ($selectedAction === "loaner") {
-            $loanerCordCheckedIn = 1;
-        } elseif ($selectedAction === "replacement") {
-            $replacementCordCheckedIn = 1;
-        }
-
-        // Update the existing record in the Replacement_Loaner_Cords table
-        $updateQuery = "UPDATE replacement_loaner_cords 
-                        SET loaner_cord_checkedout = ?, loaner_cord_checkedin = ?, replacement_cord_checkedout = 0, replacement_cord_checkedin = ?,
-                        checkin_date = NOW() 
-                        WHERE student_number = ?";
+        // Update the checkin_date for the appropriate charger cord
+        $updateQuery = "UPDATE replacement_loaner_cords
+        SET loaner_cord_checkedin = CASE WHEN ? = 1 THEN 1 ELSE loaner_cord_checkedin END,
+            replacement_cord_checkedin = CASE WHEN ? = 1 THEN 1 ELSE replacement_cord_checkedin END,
+            checkin_date = NOW()
+        WHERE student_number = ?";
         $stmt = $conn->prepare($updateQuery);
-        $stmt->bind_param("iiis", $loanerCordCheckedOut, $loanerCordCheckedIn, $replacementCordCheckedIn, $studentNumber);
+
+        // Use separate variables to store the values of ternary expressions
+        $loanerCheckedIn = $selectedAction === "loaner" ? 1 : 0;
+        $replacementCheckedIn = $selectedAction === "replacement" ? 1 : 0;
+
+        $stmt->bind_param("iis", $loanerCheckedIn, $replacementCheckedIn, $studentNumber);
         $stmt->execute();
 
         // Display success message
-        $message = "Cord successfully checked in for $firstName $lastName as a $selectedAction on " . date("Y-m-d H:i:s") . ".";
+        $message = "Cord successfully checked in for $firstName $lastName as a $selectedAction.";
     } else {
         // Student with the entered number doesn't exist
-        $message = "Student with the entered number doesn't exist.";
+        $message = "Student with the entered number doesn't exist in the database because the student does not have a laptop checked out.";
     }
+} else {
+    // Student first name and/or last name not provided
+    $message = "Please enter both first name and last name of the student.";
+}
 
     $conn->close();
 }
 ?>
-
-
 
 <!-- Your HTML code for the replace_loanCord.php page goes here... -->
 
