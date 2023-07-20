@@ -46,14 +46,6 @@
              die('Connection failed: ' . $conn->connect_error);
          }
          
-         // Perform the inner join query to get the laptop history report
-        //  $sql = "SELECT LaptopData.laptop_checkedout, LaptopData.charger_cord_checkedout, 
-        //                 LaptopData.checkout_date, LaptopData.checkin_date, LaptopData.charger_cord_returned, 
-        //                 StudentData.student_number, StudentData.first_name, StudentData.last_name
-        //          FROM LaptopData
-        //          INNER JOIN StudentData ON LaptopData.student_number = StudentData.student_number
-        //          WHERE LaptopData.serial_number = '$laptopSerialNumber'
-        //          GROUP BY StudentData.student_number";
         $sql = "SELECT LaptopData.laptop_checkedout, LaptopData.charger_cord_checkedout, 
             LaptopData.checkout_date, LaptopData.checkin_date, LaptopData.charger_cord_returned, 
             StudentData.student_number, StudentData.first_name, StudentData.last_name

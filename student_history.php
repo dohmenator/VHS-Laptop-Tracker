@@ -51,13 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if ($result && $result->num_rows > 0) {
-            // Display the student's laptop history
-            // Your code to display the table goes here...
-        } else {
-            // No laptop history found for the student
-            $message = "No laptop history found for the entered student number.";
+        if ($result->num_rows == 0){
+            $message = "No charger cord history found for the entered student number.";
         }
+        
     } else {
         // Student with the entered number doesn't exist
         $message = "Student with the entered number doesn't exist.";
